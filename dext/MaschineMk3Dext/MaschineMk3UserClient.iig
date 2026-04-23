@@ -1,0 +1,57 @@
+//
+// MaschineMk3UserClient.iig
+//
+// IOUserClient for Rust-side access to either MaschineMk3HidTransport or
+// MaschineMk3DisplayTransport. The discriminator is the provider class at
+// Start time. Dispatch selectors are frozen in MaschineIPC.h and mirrored
+// in crates/maschine-core/src/transport/dext_wire.rs.
+//
+
+#ifndef MaschineMk3UserClient_h
+#define MaschineMk3UserClient_h
+
+#include <Availability.h>
+#include <DriverKit/IOUserClient.iig>
+
+class MaschineMk3UserClient: public IOUserClient
+{
+public:
+    virtual bool init() override;
+    virtual void free() override;
+
+    virtual kern_return_t Start(IOService * provider) override;
+    virtual kern_return_t Stop(IOService * provider) override;
+
+    virtual kern_return_t ExternalMethod(
+        uint64_t                           selector,
+        IOUserClientMethodArguments      * arguments,
+        const IOUserClientMethodDispatch * dispatch,
+        OSObject                         * target,
+        void                             * reference) override LOCALONLY;
+
+    // Called from the owning transport class on each completed USB transfer.
+    virtual void DeliverHidIn(const uint8_t * bytes, uint32_t length,
+                              uint32_t seq, uint64_t timestamp) LOCALONLY;
+    virtual void DeliverDisplayDone(uint32_t seq, kern_return_t status) LOCALONLY;
+
+    // Static dispatch trampolines — one per selector. Declared LOCALONLY so
+    // the bodies live in the .cpp and have private access to ivars.
+    static kern_return_t DispatchOpen(OSObject * target, void * reference,
+                                      IOUserClientMethodArguments * args) LOCALONLY;
+    static kern_return_t DispatchClose(OSObject * target, void * reference,
+                                       IOUserClientMethodArguments * args) LOCALONLY;
+    static kern_return_t DispatchRegisterHidCallback(OSObject * target, void * reference,
+                                                     IOUserClientMethodArguments * args) LOCALONLY;
+    static kern_return_t DispatchRegisterDisplayCallback(OSObject * target, void * reference,
+                                                         IOUserClientMethodArguments * args) LOCALONLY;
+    static kern_return_t DispatchHidOutReport(OSObject * target, void * reference,
+                                              IOUserClientMethodArguments * args) LOCALONLY;
+    static kern_return_t DispatchBulkOut(OSObject * target, void * reference,
+                                         IOUserClientMethodArguments * args) LOCALONLY;
+    static kern_return_t DispatchDeviceState(OSObject * target, void * reference,
+                                             IOUserClientMethodArguments * args) LOCALONLY;
+    static kern_return_t DispatchAbort(OSObject * target, void * reference,
+                                       IOUserClientMethodArguments * args) LOCALONLY;
+};
+
+#endif /* MaschineMk3UserClient_h */

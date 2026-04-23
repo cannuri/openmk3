@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    com.cantonic.maschined.plist — LaunchDaemon template for maschined.
+
+    Copied to /Library/LaunchDaemons/ by dext/scripts/install-daemon.sh when
+    the installer is built with MASCHINE_INSTALL_LAUNCHD=1. Runs maschined at
+    boot as root, relaunches on crash.
+
+    To run as a per-user LaunchAgent instead (runs when the user is logged in,
+    no root), move this file to ~/Library/LaunchAgents/ and drop the UserName
+    key. LaunchDaemon is preferred for v0.1 so the controller works as soon
+    as the Mac finishes booting, regardless of which user is logged in.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.cantonic.maschined</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/Maschine.app/Contents/MacOS/maschined</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>ProcessType</key>
+    <string>Interactive</string>
+
+    <key>StandardOutPath</key>
+    <string>/var/log/maschined.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/var/log/maschined.err.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>RUST_LOG</key>
+        <string>info</string>
+    </dict>
+</dict>
+</plist>

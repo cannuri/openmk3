@@ -1,0 +1,501 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A0100001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0200001 /* main.swift */; };
+		A0100010 /* MaschineMk3HidTransport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0200010 /* MaschineMk3HidTransport.cpp */; };
+		A0100011 /* MaschineMk3HidTransport.iig in Sources */ = {isa = PBXBuildFile; fileRef = A0200011 /* MaschineMk3HidTransport.iig */; };
+		A0100012 /* MaschineMk3DisplayTransport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0200012 /* MaschineMk3DisplayTransport.cpp */; };
+		A0100013 /* MaschineMk3DisplayTransport.iig in Sources */ = {isa = PBXBuildFile; fileRef = A0200013 /* MaschineMk3DisplayTransport.iig */; };
+		A0100014 /* MaschineMk3UserClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0200014 /* MaschineMk3UserClient.cpp */; };
+		A0100015 /* MaschineMk3UserClient.iig in Sources */ = {isa = PBXBuildFile; fileRef = A0200015 /* MaschineMk3UserClient.iig */; };
+		A0100020 /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0200020 /* DriverKit.framework */; };
+		A0100021 /* USBDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0200021 /* USBDriverKit.framework */; };
+		A0100030 /* MaschineMk3Dext.dext in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = A0300002 /* MaschineMk3Dext.dext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A0400001 /* Embed System Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "Contents/Library/SystemExtensions";
+			dstSubfolderSpec = 1;
+			files = (
+				A0100030 /* MaschineMk3Dext.dext in Embed System Extensions */,
+			);
+			name = "Embed System Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A0200001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		A0200002 /* MaschineHost-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A0200003 /* MaschineHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MaschineHost.entitlements; sourceTree = "<group>"; };
+		A0200010 /* MaschineMk3HidTransport.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaschineMk3HidTransport.cpp; sourceTree = "<group>"; };
+		A0200011 /* MaschineMk3HidTransport.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = MaschineMk3HidTransport.iig; sourceTree = "<group>"; };
+		A0200012 /* MaschineMk3DisplayTransport.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaschineMk3DisplayTransport.cpp; sourceTree = "<group>"; };
+		A0200013 /* MaschineMk3DisplayTransport.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = MaschineMk3DisplayTransport.iig; sourceTree = "<group>"; };
+		A0200014 /* MaschineMk3UserClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaschineMk3UserClient.cpp; sourceTree = "<group>"; };
+		A0200015 /* MaschineMk3UserClient.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = MaschineMk3UserClient.iig; sourceTree = "<group>"; };
+		A0200016 /* MaschineMk3Dext-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A0200017 /* MaschineMk3Dext.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MaschineMk3Dext.entitlements; sourceTree = "<group>"; };
+		A0200020 /* DriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DriverKit.framework; path = System/Library/Frameworks/DriverKit.framework; sourceTree = SDKROOT; };
+		A0200021 /* USBDriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = USBDriverKit.framework; path = System/Library/Frameworks/USBDriverKit.framework; sourceTree = SDKROOT; };
+		A0300001 /* MaschineHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaschineHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0300002 /* MaschineMk3Dext.dext */ = {isa = PBXFileReference; explicitFileType = wrapper.driver-extension; includeInIndex = 0; path = MaschineMk3Dext.dext; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A0500001 /* Frameworks (Host) */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A0500002 /* Frameworks (Dext) */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0100020 /* DriverKit.framework in Frameworks */,
+				A0100021 /* USBDriverKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A0600001 = {
+			isa = PBXGroup;
+			children = (
+				A0600002 /* MaschineHost */,
+				A0600003 /* MaschineMk3Dext */,
+				A0600010 /* Frameworks */,
+				A0600020 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A0600002 /* MaschineHost */ = {
+			isa = PBXGroup;
+			children = (
+				A0200001 /* main.swift */,
+				A0200002 /* MaschineHost-Info.plist */,
+				A0200003 /* MaschineHost.entitlements */,
+			);
+			path = MaschineHost;
+			sourceTree = "<group>";
+		};
+		A0600003 /* MaschineMk3Dext */ = {
+			isa = PBXGroup;
+			children = (
+				A0200011 /* MaschineMk3HidTransport.iig */,
+				A0200010 /* MaschineMk3HidTransport.cpp */,
+				A0200013 /* MaschineMk3DisplayTransport.iig */,
+				A0200012 /* MaschineMk3DisplayTransport.cpp */,
+				A0200015 /* MaschineMk3UserClient.iig */,
+				A0200014 /* MaschineMk3UserClient.cpp */,
+				A0200016 /* MaschineMk3Dext-Info.plist */,
+				A0200017 /* MaschineMk3Dext.entitlements */,
+			);
+			path = MaschineMk3Dext;
+			sourceTree = "<group>";
+		};
+		A0600010 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A0200020 /* DriverKit.framework */,
+				A0200021 /* USBDriverKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A0600020 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A0300001 /* MaschineHost.app */,
+				A0300002 /* MaschineMk3Dext.dext */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A0700001 /* MaschineHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0800001 /* Build configuration list for PBXNativeTarget "MaschineHost" */;
+			buildPhases = (
+				A0900001 /* Sources (Host) */,
+				A0500001 /* Frameworks (Host) */,
+				A0A00001 /* Resources (Host) */,
+				A0400001 /* Embed System Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A0B00001 /* PBXTargetDependency */,
+			);
+			name = MaschineHost;
+			productName = MaschineHost;
+			productReference = A0300001 /* MaschineHost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A0700002 /* MaschineMk3Dext */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0800002 /* Build configuration list for PBXNativeTarget "MaschineMk3Dext" */;
+			buildPhases = (
+				A0900002 /* Sources (Dext) */,
+				A0500002 /* Frameworks (Dext) */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MaschineMk3Dext;
+			productName = MaschineMk3Dext;
+			productReference = A0300002 /* MaschineMk3Dext.dext */;
+			productType = "com.apple.product-type.driver-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A0C00001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					A0700001 = {
+						CreatedOnToolsVersion = 16.2;
+						ProvisioningStyle = Automatic;
+					};
+					A0700002 = {
+						CreatedOnToolsVersion = 16.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A0800000 /* Build configuration list for PBXProject "MaschineDext" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A0600001;
+			productRefGroup = A0600020 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A0700001 /* MaschineHost */,
+				A0700002 /* MaschineMk3Dext */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A0A00001 /* Resources (Host) */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A0900001 /* Sources (Host) */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0100001 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A0900002 /* Sources (Dext) */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0100011 /* MaschineMk3HidTransport.iig in Sources */,
+				A0100010 /* MaschineMk3HidTransport.cpp in Sources */,
+				A0100013 /* MaschineMk3DisplayTransport.iig in Sources */,
+				A0100012 /* MaschineMk3DisplayTransport.cpp in Sources */,
+				A0100015 /* MaschineMk3UserClient.iig in Sources */,
+				A0100014 /* MaschineMk3UserClient.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A0B00001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0700002 /* MaschineMk3Dext */;
+			targetProxy = A0B00002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXContainerItemProxy section */
+		A0B00002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0C00001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0700002;
+			remoteInfo = MaschineMk3Dext;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin XCBuildConfiguration section */
+		A0D00001 /* Debug (Project) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_STYLE = Automatic;
+			};
+			name = Debug;
+		};
+		A0D00002 /* Release (Project) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_STYLE = Automatic;
+			};
+			name = Release;
+		};
+		A0D00010 /* Debug (Host) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = MaschineHost/MaschineHost.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MaschineHost/Info.plist;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine;
+				PRODUCT_NAME = MaschineHost;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A0D00011 /* Release (Host) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = MaschineHost/MaschineHost.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MaschineHost/Info.plist;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine;
+				PRODUCT_NAME = MaschineHost;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A0D00020 /* Debug (Dext) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = MaschineMk3Dext/MaschineMk3Dext.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				DRIVERKIT_DEPLOYMENT_TARGET = 23.0;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MaschineMk3Dext/Info.plist;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine.dext;
+				PRODUCT_NAME = MaschineMk3Dext;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = driverkit;
+				SUPPORTED_PLATFORMS = driverkit;
+				WRAPPER_EXTENSION = dext;
+			};
+			name = Debug;
+		};
+		A0D00021 /* Release (Dext) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = MaschineMk3Dext/MaschineMk3Dext.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				DRIVERKIT_DEPLOYMENT_TARGET = 23.0;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MaschineMk3Dext/Info.plist;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine.dext;
+				PRODUCT_NAME = MaschineMk3Dext;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = driverkit;
+				SUPPORTED_PLATFORMS = driverkit;
+				WRAPPER_EXTENSION = dext;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A0800000 /* Build configuration list for PBXProject "MaschineDext" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0D00001 /* Debug (Project) */,
+				A0D00002 /* Release (Project) */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0800001 /* Build configuration list for PBXNativeTarget "MaschineHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0D00010 /* Debug (Host) */,
+				A0D00011 /* Release (Host) */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0800002 /* Build configuration list for PBXNativeTarget "MaschineMk3Dext" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0D00020 /* Debug (Dext) */,
+				A0D00021 /* Release (Dext) */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A0C00001 /* Project object */;
+}

@@ -1,0 +1,61 @@
+//
+// MaschineMk3HidTransport.iig
+//
+// HID transport for the Mk3 (USB interface #4). Owns the interrupt-IN pipe
+// on EP 0x84 (64-byte packets) and an interrupt-OUT ring on EP 0x03.
+// Authority: dext/docs/A1-architecture.md §2.1.
+//
+
+#ifndef MaschineMk3HidTransport_h
+#define MaschineMk3HidTransport_h
+
+#include <Availability.h>
+#include <DriverKit/IOService.iig>
+#include <DriverKit/OSAction.iig>
+#include <USBDriverKit/IOUSBHostPipe.iig>
+
+class MaschineMk3UserClient;
+
+class MaschineMk3HidTransport: public IOService
+{
+public:
+    virtual bool init() override;
+    virtual void free() override;
+
+    virtual kern_return_t Start(IOService * provider) override;
+    virtual kern_return_t Stop(IOService * provider) override;
+
+    // Attach/detach a user client instance. Called by MaschineMk3UserClient
+    // during its Start/Stop (the transport is its provider).
+    virtual kern_return_t AttachClient(MaschineMk3UserClient * client) LOCALONLY;
+    virtual void          DetachClient(MaschineMk3UserClient * client) LOCALONLY;
+
+    // Enqueue a HID OUT report to EP 0x03. Returns kIOReturnNoResources if
+    // the 4-slot ring is full, kIOReturnNotReady if the pipe isn't open yet.
+    virtual kern_return_t SubmitHidOut(const void * bytes, uint32_t length) LOCALONLY;
+
+    // Abort any in-flight HID OUT transfers (sync).
+    virtual kern_return_t AbortHidOut() LOCALONLY;
+
+    // Static descriptor info for kSel_DeviceState.
+    virtual uint8_t InterfaceNumber() const LOCALONLY;
+    virtual uint8_t HidInEndpoint()   const LOCALONLY;
+    virtual uint8_t HidOutEndpoint()  const LOCALONLY;
+
+    // AsyncIO completion callbacks. Signatures must match
+    // IOUSBHostPipe::CompleteAsyncIO; the TYPE() attribute causes IIG to
+    // generate CreateActionHandleHidInComplete / CreateActionHandleHidOutComplete.
+    virtual void HandleHidInComplete(
+        OSAction * action,
+        IOReturn   status,
+        uint32_t   actualByteCount,
+        uint64_t   completionTimestamp) TYPE(IOUSBHostPipe::CompleteAsyncIO);
+
+    virtual void HandleHidOutComplete(
+        OSAction * action,
+        IOReturn   status,
+        uint32_t   actualByteCount,
+        uint64_t   completionTimestamp) TYPE(IOUSBHostPipe::CompleteAsyncIO);
+};
+
+#endif /* MaschineMk3HidTransport_h */

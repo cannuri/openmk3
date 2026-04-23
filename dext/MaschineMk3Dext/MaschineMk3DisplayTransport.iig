@@ -1,0 +1,51 @@
+//
+// MaschineMk3DisplayTransport.iig
+//
+// Display bulk transport for the Mk3 (USB interface #5). Owns the single
+// bulk-OUT pipe on EP 0x04 and a 16-slot descriptor ring used with
+// AsyncIOBundled for high-throughput display submissions.
+// Authority: dext/docs/A1-architecture.md §2.2.
+//
+
+#ifndef MaschineMk3DisplayTransport_h
+#define MaschineMk3DisplayTransport_h
+
+#include <Availability.h>
+#include <DriverKit/IOService.iig>
+#include <DriverKit/OSAction.iig>
+#include <USBDriverKit/IOUSBHostPipe.iig>
+
+class MaschineMk3UserClient;
+
+class MaschineMk3DisplayTransport: public IOService
+{
+public:
+    virtual bool init() override;
+    virtual void free() override;
+
+    virtual kern_return_t Start(IOService * provider) override;
+    virtual kern_return_t Stop(IOService * provider) override;
+
+    virtual kern_return_t AttachClient(MaschineMk3UserClient * client) LOCALONLY;
+    virtual void          DetachClient(MaschineMk3UserClient * client) LOCALONLY;
+
+    // Submit one display frame to EP 0x04. Returns kIOReturnNoResources if
+    // all 16 ring slots are in flight.
+    virtual kern_return_t SubmitBulkOut(const void * bytes, uint32_t length, uint32_t seq) LOCALONLY;
+    virtual kern_return_t AbortBulkOut() LOCALONLY;
+
+    virtual uint8_t InterfaceNumber() const LOCALONLY;
+    virtual uint8_t BulkOutEndpoint() const LOCALONLY;
+
+    // Bulk bundled completion. Signature must match IOUSBHostPipe::CompleteAsyncIOBundled.
+    virtual void HandleBulkOutComplete(
+        OSAction           * action,
+        uint32_t             ioCompletionIndex,
+        uint32_t             ioCompletionCount,
+        const uint32_t       actualByteCountArray[16],
+        int                  actualByteCountArrayCount,
+        const kern_return_t  statusArray[16],
+        int                  statusArrayCount) TYPE(IOUSBHostPipe::CompleteAsyncIOBundled);
+};
+
+#endif /* MaschineMk3DisplayTransport_h */

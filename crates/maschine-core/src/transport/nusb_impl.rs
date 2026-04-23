@@ -8,30 +8,16 @@
 
 use std::time::Duration;
 
-use nusb::transfer::{RequestBuffer, TransferError};
+use nusb::transfer::RequestBuffer;
 use tokio::sync::mpsc;
 
 use maschine_proto as proto;
 
 use crate::platform::{ClaimGuard, DeviceClaim};
 
-#[derive(Debug, thiserror::Error)]
-pub enum TransportError {
-    #[error("usb: {0}")]
-    Usb(#[from] nusb::Error),
-    #[error("transfer: {0}")]
-    Transfer(#[from] TransferError),
-    #[error("device 17cc:1600 not found — is the Mk3 plugged in and powered?")]
-    NotFound,
-    #[error("failed to claim USB interface {iface}: {source}")]
-    Claim { iface: u8, #[source] source: nusb::Error },
-    #[error("platform: {0}")]
-    Platform(String),
-}
+use super::{InboundRx, TransportError};
 
-pub type InboundRx = mpsc::Receiver<Vec<u8>>;
-
-pub struct Transport {
+pub struct NusbTransport {
     #[allow(dead_code)]
     device: nusb::Device,
     hid_iface: nusb::Interface,
@@ -39,7 +25,7 @@ pub struct Transport {
     _guard: ClaimGuard,
 }
 
-impl Transport {
+impl NusbTransport {
     pub async fn open() -> Result<Self, TransportError> {
         let guard = crate::platform::current().prepare()
             .map_err(|e| TransportError::Platform(e.to_string()))?;
