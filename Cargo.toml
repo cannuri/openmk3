@@ -46,6 +46,15 @@ anyhow           = "1"
 libc             = "0.2"
 embedded-graphics-core = "0.4"
 
+[patch.crates-io]
+# Fork of nusb 0.2.3 with two one-line patches on macOS_iokit/iokit_usb.rs:
+#   USBDeviceOpen()    → USBDeviceOpenSeize()
+#   USBInterfaceOpen() → USBInterfaceOpenSeize()
+# These Seize variants let us claim the Mk3's non-audio USB interfaces
+# (HID input + display bulk) even though Apple's generic drivers have
+# already bound to them — the same trick Chrome's WebUSB uses.
+nusb = { path = "vendor/nusb" }
+
 [profile.release]
 opt-level = 3
 lto = "thin"

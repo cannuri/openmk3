@@ -73,17 +73,9 @@ impl DisplayHandle {
                     }
                 };
                 if let Some(payload) = payload_opt {
-                    match transport.write_display(payload).await {
-                        Ok(()) => {}
-                        Err(crate::transport::TransportError::DisplayUnavailable) => {
-                            // Platform hasn't claimed the display; nothing to
-                            // do — the framebuffer is still valid in memory.
-                            tokio::time::sleep(Duration::from_millis(100)).await;
-                        }
-                        Err(e) => {
-                            tracing::warn!("display {:?} write failed: {e}", id);
-                            tokio::time::sleep(Duration::from_millis(20)).await;
-                        }
+                    if let Err(e) = transport.write_display(payload).await {
+                        tracing::warn!("display {:?} write failed: {e}", id);
+                        tokio::time::sleep(Duration::from_millis(20)).await;
                     }
                 }
             }
