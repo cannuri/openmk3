@@ -58,24 +58,33 @@ pub fn read_metadata(path: &Path) -> Result<NksFile, NksError> {
         };
         let len = read_u32_le(&mut f)? as u64;
         let data_start = f.stream_position()?;
+        // NIKS sub-chunks all carry a 4-byte little-endian version prefix
+        // followed by the actual payload. We assume version 1 is universally
+        // the current revision; if higher versions appear we'd want to
+        // dispatch on it, but nothing in the wild today requires that.
+        let payload_len = len.saturating_sub(4);
         match &id {
             b"NISI" => {
-                let mut buf = vec![0u8; len as usize];
+                let _version = read_u32_le(&mut f)?;
+                let mut buf = vec![0u8; payload_len as usize];
                 f.read_exact(&mut buf)?;
                 summary = Some(rmp_serde::from_slice(&buf)?);
             }
             b"PLID" => {
-                let mut buf = vec![0u8; len as usize];
+                let _version = read_u32_le(&mut f)?;
+                let mut buf = vec![0u8; payload_len as usize];
                 f.read_exact(&mut buf)?;
                 plugin = Some(rmp_serde::from_slice(&buf)?);
             }
             b"NICA" => {
-                let mut buf = vec![0u8; len as usize];
+                let _version = read_u32_le(&mut f)?;
+                let mut buf = vec![0u8; payload_len as usize];
                 f.read_exact(&mut buf)?;
                 controller = Some(NksController { raw: buf });
             }
             b"PCHK" => {
-                pchk = Some((data_start, len));
+                // Skip the version prefix; the real plugin state starts at +4.
+                pchk = Some((data_start + 4, payload_len));
                 f.seek(SeekFrom::Current(len as i64))?;
             }
             _ => {

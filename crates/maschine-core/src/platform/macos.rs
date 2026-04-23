@@ -19,7 +19,11 @@ use super::{ClaimError, ClaimGuard, DeviceClaim};
 
 const NI_AGENT: &str = "NIHostIntegrationAgent";
 const AGENT_SERVICE: &str = "com.native-instruments.NIHostIntegrationAgent";
+/// Other NI processes that hold the device's USB interfaces and must be
+/// suspended for our direct-claim path to succeed. Kept as a conservative
+/// list — every entry here is restored via SIGCONT in `Drop`.
 const CONFLICTING_APPS: &[&str] = &[
+    "NIHardwareAgent",     // background service; grabs interface #4
     "Maschine 2",
     "Maschine",
     "Komplete Kontrol",
@@ -73,6 +77,37 @@ impl MacOsClaimState {
             }
         }
 
+        // 3. coremidi / MIDIServer.
+        //
+        // The Mk3 advertises itself as a USB Audio Class device on
+        // interfaces 0..3 (for the audio interface + class-compliant MIDI),
+        // which causes `MIDIServer` to open the *whole* device exclusively.
+        // That blocks our claim on interface 4.
+        //
+        // SIGKILL'ing `coremidid` forces launchd to respawn it. The kernel
+        // briefly releases the exclusive device handle, giving us a window
+        // to claim interfaces 4 and 5. Once those claims land, the
+        // respawned `coremidid` can no longer steal them back — it just
+        // re-opens the audio interfaces it already owned.
+        //
+        // We do *not* add `coremidid` to `stopped_pids` because there is no
+        // "SIGCONT" restoration step — launchd already handled the restart
+        // transparently.
+        // Exact process name on current macOS is `MIDIServer` (not
+        // `coremidid` — that binary hasn't existed since 10.13).
+        //
+        // We DO NOT sleep after the kill: launchd respawns MIDIServer
+        // within ~20–50 ms, so every millisecond of sleep here loses us
+        // the race to claim the device. The caller (`Transport::open`)
+        // runs this claim in a retry loop, so if we lose the first race
+        // we simply kill again and retry.
+        for name in ["MIDIServer", "usbaudiod"] {
+            if let Some(pid) = pgrep(name) {
+                unsafe { libc::kill(pid, libc::SIGKILL); }
+                tracing::debug!("SIGKILL {name} (pid {pid})");
+            }
+        }
+
         Ok(Self { agent_was_bootable, stopped_pids })
     }
 }
@@ -96,6 +131,9 @@ impl Drop for MacOsClaimState {
 }
 
 fn pgrep(name: &str) -> Option<libc::pid_t> {
+    // `pgrep -x` matches on the process' short name. NI ships agents under
+    // .app bundles whose executable is the same name, so the short-match is
+    // reliable enough and avoids false positives from `pgrep -f`.
     let out = Command::new("pgrep").arg("-x").arg(name).output().ok()?;
     let s = String::from_utf8_lossy(&out.stdout);
     s.lines().next().and_then(|l| l.trim().parse().ok())

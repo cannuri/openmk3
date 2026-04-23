@@ -136,15 +136,12 @@ impl Scanner {
                 )?;
             }
         }
+        // SQLite FTS5 virtual tables don't support UPSERT, so we delete +
+        // insert to keep updates idempotent.
+        tx.execute("DELETE FROM presets_fts WHERE rowid = ?1", params![preset_id])?;
         tx.execute(
             "INSERT INTO presets_fts(rowid, name, vendor, author, comment, bank_chain)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6)
-             ON CONFLICT(rowid) DO UPDATE SET
-                name = excluded.name,
-                vendor = excluded.vendor,
-                author = excluded.author,
-                comment = excluded.comment,
-                bank_chain = excluded.bank_chain",
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             params![
                 preset_id,
                 nks.summary.name.as_deref().unwrap_or(""),

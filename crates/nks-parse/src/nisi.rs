@@ -23,7 +23,12 @@ pub struct NksSummary {
     pub name: Option<String>,
     pub bankchain: Option<Vec<String>>,
     pub types: Option<Vec<Vec<String>>>,
+    /// Mode/character tag strings. NKS v1 uses the key "modes"; v2 NISI
+    /// chunks from Massive X and Kontakt 7 use "characters" instead. We
+    /// accept either and deserialize into the same field.
+    #[serde(alias = "characters")]
     pub modes: Option<Vec<String>>,
     #[serde(rename = "deviceType")]
     pub device_type: Option<String>,
+    pub uuid: Option<String>,
 }

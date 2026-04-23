@@ -158,11 +158,29 @@ async fn main() -> Result<()> {
         }
     });
 
-    // UDS op pump.
-    while let Some((op, reply)) = op_rx.recv().await {
-        let r = handle_uds_op(&app, &db_path, op).await;
-        let _ = reply.send(r).await;
+    // UDS op pump — terminates on Ctrl-C / SIGTERM so the transport's Drop
+    // runs and the NI agent gets restored cleanly.
+    let mut sigint = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
+    let mut sigterm = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
+    loop {
+        tokio::select! {
+            Some((op, reply)) = op_rx.recv() => {
+                let r = handle_uds_op(&app, &db_path, op).await;
+                let _ = reply.send(r).await;
+            }
+            _ = sigint.recv() => {
+                tracing::info!("SIGINT received — shutting down");
+                break;
+            }
+            _ = sigterm.recv() => {
+                tracing::info!("SIGTERM received — shutting down");
+                break;
+            }
+            else => break,
+        }
     }
+    drop(mk3); // runs Transport::Drop → ClaimGuard::Drop → SIGCONT agents
+    tracing::info!("maschined stopped cleanly");
     Ok(())
 }
 

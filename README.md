@@ -23,6 +23,33 @@ v0.1 targets macOS; Linux and Windows follow in v0.2.
 - `pluginhost` is a JUCE console app (built out-of-tree with CMake) that
   `maschined` spawns as a child process to load and play presets.
 
+## Known issue on macOS (v0.1)
+
+Modern macOS's `MIDIServer` opens every class-compliant USB MIDI device
+*exclusively* at the IOUSB layer. The Mk3 advertises USB Audio Class on
+interfaces 0–3, so `MIDIServer` grabs the whole device and our attempt to
+claim interface #4 (HID) fails with `could not be opened for exclusive
+access`.
+
+`maschined` already kills `NIHostIntegrationAgent`, `NIHardwareAgent`,
+`usbaudiod`, and `MIDIServer` before the claim, but `launchd` respawns
+`MIDIServer` in under 50 ms, winning the race. Until the planned v0.1.1
+fix (wrapping `USBInterfaceOpenSeize` from IOKit), the reliable workaround
+is to unload the MIDIServer launch-agent for the duration of the session:
+
+```sh
+sudo launchctl unload /System/Library/LaunchAgents/com.apple.midiserver.plist
+cargo run --release -p maschined
+# …use the device…
+sudo launchctl load   /System/Library/LaunchAgents/com.apple.midiserver.plist
+```
+
+If a crash leaves the NI background agents suspended (`STAT=T` in `ps`):
+
+```sh
+cargo run --example restore_agent -p maschine-core
+```
+
 ## Quick start
 
 ```sh

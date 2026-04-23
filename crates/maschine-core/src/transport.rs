@@ -18,7 +18,17 @@ pub enum TransportError {
     Transfer(#[from] TransferError),
     #[error("device 17cc:1600 not found — is the Mk3 plugged in and powered?")]
     NotFound,
-    #[error("failed to claim USB interface {iface}: {source}")]
+    #[error(
+        "failed to claim USB interface {iface}: {source}. \
+        On macOS this usually means the system `MIDIServer` has the Mk3 \
+        opened exclusively. Run `cargo run --example restore_agent -p maschine-core` \
+        first (restores any frozen NI agents), then disable MIDIServer \
+        temporarily with:\n\
+        \x20 sudo launchctl unload /System/Library/LaunchAgents/com.apple.midiserver.plist\n\
+        \x20 cargo run --release -p maschined\n\
+        \x20 sudo launchctl load   /System/Library/LaunchAgents/com.apple.midiserver.plist\n\
+        A permanent fix using USBInterfaceOpenSeize is tracked as v0.1.1 work."
+    )]
     Claim { iface: u8, #[source] source: nusb::Error },
     #[error("platform: {0}")]
     Platform(String),
@@ -38,22 +48,52 @@ pub struct Transport {
     _guard: ClaimGuard,
 }
 
-impl Transport {
-    /// Locate + open the first Mk3, detach any kernel driver claim, and
-    /// claim interfaces #4 (HID) and #5 (display bulk).
-    pub async fn open() -> Result<Self, TransportError> {
-        let guard = crate::platform::current().prepare()
-            .map_err(|e| TransportError::Platform(e.to_string()))?;
+fn try_claim(dev_info: &nusb::DeviceInfo, guard: ClaimGuard) -> Result<Transport, TransportError> {
+    let device = dev_info.open()?;
+    let hid_iface = device.detach_and_claim_interface(proto::IFACE_HID)
+        .map_err(|e| TransportError::Claim { iface: proto::IFACE_HID, source: e })?;
+    let display_iface = device.detach_and_claim_interface(proto::IFACE_DISPLAY)
+        .map_err(|e| TransportError::Claim { iface: proto::IFACE_DISPLAY, source: e })?;
+    Ok(Transport { device, hid_iface, display_iface, _guard: guard })
+}
 
-        let dev_info = nusb::list_devices()?
-            .find(|d| d.vendor_id() == proto::VID_NI && d.product_id() == proto::PID_MK3)
-            .ok_or(TransportError::NotFound)?;
-        let device = dev_info.open()?;
-        let hid_iface = device.claim_interface(proto::IFACE_HID)
-            .map_err(|e| TransportError::Claim { iface: proto::IFACE_HID, source: e })?;
-        let display_iface = device.claim_interface(proto::IFACE_DISPLAY)
-            .map_err(|e| TransportError::Claim { iface: proto::IFACE_DISPLAY, source: e })?;
-        Ok(Self { device, hid_iface, display_iface, _guard: guard })
+impl Transport {
+    /// Locate + open the first Mk3 and claim interfaces #4 (HID) and
+    /// #5 (display bulk).
+    ///
+    /// On macOS the system `MIDIServer` opens the whole device
+    /// exclusively because it presents a USB Audio Class descriptor on
+    /// interfaces 0..3. `launchd` respawns `MIDIServer` on demand, so we
+    /// kill it and race to claim before the new instance finishes
+    /// re-registering. A small retry loop makes the race deterministic.
+    pub async fn open() -> Result<Self, TransportError> {
+        const MAX_ATTEMPTS: usize = 8;
+        let mut last_err: Option<TransportError> = None;
+        for attempt in 0..MAX_ATTEMPTS {
+            let guard = crate::platform::current().prepare()
+                .map_err(|e| TransportError::Platform(e.to_string()))?;
+
+            let Some(dev_info) = nusb::list_devices()?
+                .find(|d| d.vendor_id() == proto::VID_NI && d.product_id() == proto::PID_MK3)
+            else {
+                return Err(TransportError::NotFound);
+            };
+
+            match try_claim(&dev_info, guard) {
+                Ok(t) => {
+                    if attempt > 0 {
+                        tracing::info!("claimed Mk3 after {} retries", attempt);
+                    }
+                    return Ok(t);
+                }
+                Err(e) => {
+                    tracing::debug!("claim attempt {attempt}: {e}");
+                    last_err = Some(e);
+                    tokio::time::sleep(std::time::Duration::from_millis(120)).await;
+                }
+            }
+        }
+        Err(last_err.unwrap_or(TransportError::NotFound))
     }
 
     /// Start a background task that drains the HID IN endpoint into an mpsc

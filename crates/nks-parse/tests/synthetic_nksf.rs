@@ -10,11 +10,17 @@ use std::io::Write;
 use nks_parse::{NksFile, NksPluginId};
 
 fn riff_le(tag: &[u8; 4], body: &[u8]) -> Vec<u8> {
-    let mut out = Vec::with_capacity(body.len() + 8);
+    // Real NKS sub-chunks carry a 4-byte LE version prefix before the
+    // msgpack payload. Match that layout here so the tests exercise the
+    // same code path as production.
+    let mut payload = Vec::with_capacity(4 + body.len());
+    payload.extend_from_slice(&1u32.to_le_bytes());
+    payload.extend_from_slice(body);
+    let mut out = Vec::with_capacity(payload.len() + 8);
     out.extend_from_slice(tag);
-    out.extend_from_slice(&(body.len() as u32).to_le_bytes());
-    out.extend_from_slice(body);
-    if body.len() % 2 == 1 { out.push(0); }
+    out.extend_from_slice(&(payload.len() as u32).to_le_bytes());
+    out.extend_from_slice(&payload);
+    if payload.len() % 2 == 1 { out.push(0); }
     out
 }
 
