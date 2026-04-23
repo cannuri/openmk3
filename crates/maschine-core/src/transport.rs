@@ -1,9 +1,24 @@
-//! USB transport abstraction. The concrete impl uses `nusb` 0.1.
+//! USB transport abstraction.
+//!
+//! On macOS, nusb-based exclusive USB access to the Mk3's non-audio
+//! interfaces is blocked by Interface-Association-Descriptor matching in
+//! IOUSBHostFamily. We work around it by using two different IOKit paths:
+//!
+//! * **HID interface #4 (pads, encoders, buttons, LEDs)** → `hidapi-rs`,
+//!   which talks to `IOHIDManager`. That subsystem sees the HID interface
+//!   cleanly with no sudo, no process kills, and no launchctl fiddling.
+//! * **Vendor-bulk interface #5 (dual 480×272 displays)** → `nusb`.
+//!   On macOS today this interface isn't enumerated as an
+//!   `IOUSBHostInterface`, so `Transport::open` logs a warning and runs
+//!   with display disabled. Pads + LEDs keep working.
+//!
+//! Linux and Windows will use nusb for both interfaces once their
+//! platform backends land in v0.2.
 
+use std::sync::Arc;
 use std::time::Duration;
 
-use nusb::transfer::{RequestBuffer, TransferError};
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, Mutex};
 
 use maschine_proto as proto;
 
@@ -12,133 +27,157 @@ use crate::platform::{ClaimGuard, DeviceClaim};
 /// Errors returned by the transport layer.
 #[derive(Debug, thiserror::Error)]
 pub enum TransportError {
+    #[error("hid: {0}")]
+    Hid(#[from] hidapi::HidError),
     #[error("usb: {0}")]
     Usb(#[from] nusb::Error),
     #[error("transfer: {0}")]
-    Transfer(#[from] TransferError),
+    Transfer(#[from] nusb::transfer::TransferError),
     #[error("device 17cc:1600 not found — is the Mk3 plugged in and powered?")]
     NotFound,
-    #[error(
-        "failed to claim USB interface {iface}: {source}. \
-        On macOS this usually means the system `MIDIServer` has the Mk3 \
-        opened exclusively. Run `cargo run --example restore_agent -p maschine-core` \
-        first (restores any frozen NI agents), then disable MIDIServer \
-        temporarily with:\n\
-        \x20 sudo launchctl unload /System/Library/LaunchAgents/com.apple.midiserver.plist\n\
-        \x20 cargo run --release -p maschined\n\
-        \x20 sudo launchctl load   /System/Library/LaunchAgents/com.apple.midiserver.plist\n\
-        A permanent fix using USBInterfaceOpenSeize is tracked as v0.1.1 work."
-    )]
-    Claim { iface: u8, #[source] source: nusb::Error },
+    #[error("display bulk interface not available on this platform yet")]
+    DisplayUnavailable,
     #[error("platform: {0}")]
     Platform(String),
 }
 
-/// Direction of HID I/O.
+/// Inbound HID report queue.
 pub type InboundRx = mpsc::Receiver<Vec<u8>>;
 
-/// Handle to an opened Mk3. Keeps the platform claim guard alive for the
-/// lifetime of the transport.
+/// Handle to an opened Mk3.
 pub struct Transport {
-    #[allow(dead_code)]
-    pub(crate) device: nusb::Device,
-    pub(crate) hid_iface: nusb::Interface,
-    pub(crate) display_iface: nusb::Interface,
+    hid_dev: Arc<Mutex<hidapi::HidDevice>>,
+    /// Optional nusb handle for the display bulk interface. `None` when we
+    /// couldn't claim it (currently always the case on macOS v0.1).
+    display: Option<DisplayHandle>,
     /// Held for its `Drop` side-effects (restore NI agent on macOS).
     _guard: ClaimGuard,
 }
 
-fn try_claim(dev_info: &nusb::DeviceInfo, guard: ClaimGuard) -> Result<Transport, TransportError> {
-    let device = dev_info.open()?;
-    let hid_iface = device.detach_and_claim_interface(proto::IFACE_HID)
-        .map_err(|e| TransportError::Claim { iface: proto::IFACE_HID, source: e })?;
-    let display_iface = device.detach_and_claim_interface(proto::IFACE_DISPLAY)
-        .map_err(|e| TransportError::Claim { iface: proto::IFACE_DISPLAY, source: e })?;
-    Ok(Transport { device, hid_iface, display_iface, _guard: guard })
+struct DisplayHandle {
+    #[allow(dead_code)]
+    device: nusb::Device,
+    iface: nusb::Interface,
 }
 
 impl Transport {
-    /// Locate + open the first Mk3 and claim interfaces #4 (HID) and
-    /// #5 (display bulk).
-    ///
-    /// On macOS the system `MIDIServer` opens the whole device
-    /// exclusively because it presents a USB Audio Class descriptor on
-    /// interfaces 0..3. `launchd` respawns `MIDIServer` on demand, so we
-    /// kill it and race to claim before the new instance finishes
-    /// re-registering. A small retry loop makes the race deterministic.
+    /// Find and open the Mk3. Always succeeds if the HID interface is
+    /// present; the display bulk interface is opened best-effort and its
+    /// absence degrades gracefully.
     pub async fn open() -> Result<Self, TransportError> {
-        const MAX_ATTEMPTS: usize = 8;
-        let mut last_err: Option<TransportError> = None;
-        for attempt in 0..MAX_ATTEMPTS {
-            let guard = crate::platform::current().prepare()
-                .map_err(|e| TransportError::Platform(e.to_string()))?;
+        let guard = crate::platform::current().prepare()
+            .map_err(|e| TransportError::Platform(e.to_string()))?;
 
-            let Some(dev_info) = nusb::list_devices()?
-                .find(|d| d.vendor_id() == proto::VID_NI && d.product_id() == proto::PID_MK3)
-            else {
-                return Err(TransportError::NotFound);
-            };
+        // HID — this is the one that must work.
+        let api = hidapi::HidApi::new()?;
+        let hid_path = api.device_list()
+            .find(|d| d.vendor_id() == proto::VID_NI && d.product_id() == proto::PID_MK3)
+            .map(|d| d.path().to_owned())
+            .ok_or(TransportError::NotFound)?;
+        let hid_dev = api.open_path(&hid_path)?;
+        hid_dev.set_blocking_mode(false)?;
+        tracing::info!("HID interface opened ({:?})", hid_path);
 
-            match try_claim(&dev_info, guard) {
-                Ok(t) => {
-                    if attempt > 0 {
-                        tracing::info!("claimed Mk3 after {} retries", attempt);
-                    }
-                    return Ok(t);
-                }
-                Err(e) => {
-                    tracing::debug!("claim attempt {attempt}: {e}");
-                    last_err = Some(e);
-                    tokio::time::sleep(std::time::Duration::from_millis(120)).await;
-                }
+        // Display bulk — best-effort.
+        let display = match open_display() {
+            Ok(h) => {
+                tracing::info!("display bulk interface claimed");
+                Some(h)
             }
-        }
-        Err(last_err.unwrap_or(TransportError::NotFound))
+            Err(e) => {
+                tracing::warn!(
+                    "display bulk interface unavailable: {e}. \
+                     pads/LEDs still work; screens will be blank in v0.1"
+                );
+                None
+            }
+        };
+
+        Ok(Self {
+            hid_dev: Arc::new(Mutex::new(hid_dev)),
+            display,
+            _guard: guard,
+        })
     }
 
     /// Start a background task that drains the HID IN endpoint into an mpsc
-    /// channel. The Mk3 schedules HID IN on interface 4, address `0x84`.
+    /// channel.
     pub fn spawn_hid_reader(&self) -> InboundRx {
-        const HID_IN_EP: u8 = 0x84;
-        const BUF_LEN: usize = 64;
         let (tx, rx) = mpsc::channel::<Vec<u8>>(256);
-        let iface = self.hid_iface.clone();
+        let dev = self.hid_dev.clone();
         tokio::spawn(async move {
-            let mut queue = iface.interrupt_in_queue(HID_IN_EP);
-            for _ in 0..4 {
-                queue.submit(RequestBuffer::new(BUF_LEN));
-            }
+            let mut buf = [0u8; 128];
             loop {
-                let completion = queue.next_complete().await;
-                match completion.status {
-                    Ok(()) => {
-                        if tx.send(completion.data.clone()).await.is_err() {
-                            break;
-                        }
+                // hidapi is a blocking API even with non-blocking mode;
+                // run reads on a blocking thread so we don't stall the
+                // runtime.
+                let dev = dev.clone();
+                let read = tokio::task::spawn_blocking(move || {
+                    let guard = dev.blocking_lock();
+                    let mut local = [0u8; 128];
+                    let r = guard.read_timeout(&mut local, 20).map(|n| (n, local));
+                    r
+                }).await;
+                match read {
+                    Ok(Ok((n, local))) if n > 0 => {
+                        buf[..n].copy_from_slice(&local[..n]);
+                        if tx.send(buf[..n].to_vec()).await.is_err() { break; }
                     }
-                    Err(e) => {
-                        tracing::warn!("HID IN transfer error: {e:?}");
+                    Ok(Ok(_)) => {
+                        // No data this tick — yield then retry.
+                        tokio::time::sleep(Duration::from_millis(2)).await;
+                    }
+                    Ok(Err(e)) => {
+                        tracing::warn!("HID read error: {e}");
                         tokio::time::sleep(Duration::from_millis(50)).await;
                     }
+                    Err(e) => {
+                        tracing::error!("HID reader task panicked: {e}");
+                        break;
+                    }
                 }
-                queue.submit(RequestBuffer::new(BUF_LEN));
             }
         });
         rx
     }
 
-    /// Write a HID OUT report (interrupt OUT on interface 4, address `0x03`).
+    /// Write a HID OUT report (caller supplies the report id as byte 0).
     pub async fn write_hid(&self, payload: Vec<u8>) -> Result<(), TransportError> {
-        const HID_OUT_EP: u8 = 0x03;
-        let completion = self.hid_iface.interrupt_out(HID_OUT_EP, payload).await;
+        let dev = self.hid_dev.clone();
+        let result = tokio::task::spawn_blocking(move || {
+            let guard = dev.blocking_lock();
+            guard.write(&payload).map(|_| ())
+        }).await;
+        match result {
+            Ok(Ok(())) => Ok(()),
+            Ok(Err(e)) => Err(e.into()),
+            Err(e) => Err(TransportError::Platform(format!("hid write task: {e}"))),
+        }
+    }
+
+    /// Submit a display bulk-OUT transfer on EP `0x04`. Returns
+    /// `DisplayUnavailable` if the platform could not claim interface #5.
+    pub async fn write_display(&self, payload: Vec<u8>) -> Result<(), TransportError> {
+        let Some(display) = self.display.as_ref() else {
+            return Err(TransportError::DisplayUnavailable);
+        };
+        let completion = display.iface.bulk_out(proto::EP_DISPLAY_OUT, payload).await;
         completion.status?;
         Ok(())
     }
 
-    /// Submit a display bulk-OUT transfer on EP `0x04`.
-    pub async fn write_display(&self, payload: Vec<u8>) -> Result<(), TransportError> {
-        let completion = self.display_iface.bulk_out(proto::EP_DISPLAY_OUT, payload).await;
-        completion.status?;
-        Ok(())
+    /// True if this transport can draw to the physical displays.
+    pub fn has_display(&self) -> bool {
+        self.display.is_some()
     }
+}
+
+fn open_display() -> Result<DisplayHandle, TransportError> {
+    let dev_info = nusb::list_devices()?
+        .find(|d| d.vendor_id() == proto::VID_NI && d.product_id() == proto::PID_MK3)
+        .ok_or(TransportError::NotFound)?;
+    let device = dev_info.open()?;
+    let iface = device.detach_and_claim_interface(proto::IFACE_DISPLAY)
+        .map_err(|e| TransportError::Usb(e))?;
+    Ok(DisplayHandle { device, iface })
 }

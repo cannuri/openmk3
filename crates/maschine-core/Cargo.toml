@@ -9,6 +9,7 @@ description = "USB/HID transport, event loop, and display pipeline for the NI Ma
 [dependencies]
 maschine-proto = { workspace = true }
 nusb           = { workspace = true }
+hidapi         = "2"
 tokio          = { workspace = true }
 futures        = { workspace = true }
 bytes          = { workspace = true }
