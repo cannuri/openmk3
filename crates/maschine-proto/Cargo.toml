@@ -1,0 +1,11 @@
+[package]
+name        = "maschine-proto"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Pure wire-format parsers and encoders for the NI Maschine Mk3 USB/HID protocol."
+
+[dependencies]
+bitflags   = { workspace = true }
+thiserror  = { workspace = true }

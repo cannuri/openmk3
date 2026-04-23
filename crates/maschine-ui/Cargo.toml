@@ -1,0 +1,12 @@
+[package]
+name        = "maschine-ui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Hardware UI model driving the dual 480×272 displays."
+
+[dependencies]
+maschine-proto = { workspace = true }
+nks-index      = { workspace = true }
+tracing        = { workspace = true }

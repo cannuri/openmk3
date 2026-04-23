@@ -1,0 +1,15 @@
+[package]
+name        = "plugin-registry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Scan and resolve installed VST3 and Audio Unit plugins."
+
+[dependencies]
+nks-parse  = { workspace = true }
+serde      = { workspace = true }
+serde_json = { workspace = true }
+thiserror  = { workspace = true }
+tracing    = { workspace = true }
+anyhow     = { workspace = true }

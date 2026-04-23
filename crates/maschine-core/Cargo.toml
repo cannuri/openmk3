@@ -1,0 +1,30 @@
+[package]
+name        = "maschine-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "USB/HID transport, event loop, and display pipeline for the NI Maschine Mk3."
+
+[dependencies]
+maschine-proto = { workspace = true }
+nusb           = { workspace = true }
+tokio          = { workspace = true }
+futures        = { workspace = true }
+bytes          = { workspace = true }
+thiserror      = { workspace = true }
+tracing        = { workspace = true }
+libc           = { workspace = true }
+
+[features]
+default = []
+embedded-graphics = ["dep:embedded-graphics-core"]
+
+[dependencies.embedded-graphics-core]
+workspace = true
+optional  = true
+
+[dev-dependencies]
+anyhow              = { workspace = true }
+tracing-subscriber  = { workspace = true }
+

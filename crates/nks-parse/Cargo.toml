@@ -1,0 +1,18 @@
+[package]
+name        = "nks-parse"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Parser for Native Kontrol Standard (.nksf) preset files."
+
+[dependencies]
+riff      = { workspace = true }
+rmp-serde = { workspace = true }
+serde     = { workspace = true }
+thiserror = { workspace = true }
+tracing   = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+tempfile   = "3"

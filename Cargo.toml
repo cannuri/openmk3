@@ -1,0 +1,52 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/maschine-proto",
+    "crates/maschine-core",
+    "crates/nks-parse",
+    "crates/nks-index",
+    "crates/plugin-registry",
+    "crates/maschine-ui",
+    "crates/maschined",
+    "msctl",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/cannuri/maschine"
+
+[workspace.dependencies]
+maschine-proto   = { path = "crates/maschine-proto" }
+maschine-core    = { path = "crates/maschine-core" }
+nks-parse        = { path = "crates/nks-parse" }
+nks-index        = { path = "crates/nks-index" }
+plugin-registry  = { path = "crates/plugin-registry" }
+maschine-ui      = { path = "crates/maschine-ui" }
+
+nusb             = "0.1"
+tokio            = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "io-util", "net", "fs", "signal", "process"] }
+futures          = "0.3"
+bytes            = "1"
+bitflags         = "2"
+thiserror        = "1"
+tracing          = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+serde            = { version = "1", features = ["derive"] }
+serde_json       = "1"
+rmp-serde        = "1"
+riff             = "2"
+rusqlite         = { version = "0.31", features = ["bundled"] }
+notify           = "6"
+rosc             = "0.10"
+tokio-tungstenite = "0.21"
+anyhow           = "1"
+libc             = "0.2"
+embedded-graphics-core = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
