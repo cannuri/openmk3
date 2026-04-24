@@ -3,6 +3,9 @@
 Cargo.lock
 .DS_Store
 /pluginhost/build
+/dext/build
+**/xcuserdata/
+**/DerivedData/
 *.swp
 .vscode/
 .idea/
