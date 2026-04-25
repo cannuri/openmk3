@@ -3,7 +3,7 @@
 # install-daemon.sh — invoked as the .pkg postinstall hook when the installer
 # was built with MASCHINE_INSTALL_LAUNCHD=1.
 #
-# Copies com.cantonic.maschined.plist into /Library/LaunchDaemons and loads it.
+# Copies com.cannuri.maschined.plist into /Library/LaunchDaemons and loads it.
 # The plist launches /Applications/Maschine.app/Contents/MacOS/maschined at
 # boot with RunAtLoad + KeepAlive.
 #
@@ -15,7 +15,7 @@
 
 set -euo pipefail
 
-LABEL="com.cantonic.maschined"
+LABEL="com.cannuri.maschined"
 PLIST_DST="/Library/LaunchDaemons/${LABEL}.plist"
 APP_PATH="/Applications/Maschine.app"
 EXEC_PATH="$APP_PATH/Contents/MacOS/maschined"

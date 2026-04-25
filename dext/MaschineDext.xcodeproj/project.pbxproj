@@ -384,7 +384,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cannuri.maschine;
 				PRODUCT_NAME = MaschineHost;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -413,7 +413,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cannuri.maschine;
 				PRODUCT_NAME = MaschineHost;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -434,7 +434,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MaschineMk3Dext/Info.plist;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine.dext;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cannuri.maschine.dext;
 				PRODUCT_NAME = MaschineMk3Dext;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = driverkit;
@@ -456,7 +456,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MaschineMk3Dext/Info.plist;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cantonic.maschine.dext;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cannuri.maschine.dext;
 				PRODUCT_NAME = MaschineMk3Dext;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = driverkit;

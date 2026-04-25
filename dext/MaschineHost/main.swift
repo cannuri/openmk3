@@ -9,7 +9,7 @@
 import Foundation
 import SystemExtensions
 
-let kDextBundleIdentifier = "com.cantonic.maschine.dext"
+let kDextBundleIdentifier = "com.cannuri.maschine.dext"
 
 final class ActivationDelegate: NSObject, OSSystemExtensionRequestDelegate {
     func request(_ request: OSSystemExtensionRequest,

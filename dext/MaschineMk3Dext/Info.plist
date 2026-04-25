@@ -27,7 +27,7 @@
         <key>MaschineMk3HidTransport</key>
         <dict>
             <key>CFBundleIdentifier</key>
-            <string>com.cantonic.maschine.dext</string>
+            <string>com.cannuri.maschine.dext</string>
             <key>CFBundleIdentifierKernel</key>
             <string>com.apple.kpi.iokit</string>
             <key>IOClass</key>
@@ -35,7 +35,7 @@
             <key>IOUserClass</key>
             <string>MaschineMk3HidTransport</string>
             <key>IOUserServerName</key>
-            <string>com.cantonic.maschine.dext</string>
+            <string>com.cannuri.maschine.dext</string>
             <key>IOProviderClass</key>
             <string>IOUSBHostInterface</string>
             <key>idVendor</key>
@@ -59,7 +59,7 @@
         <key>MaschineMk3DisplayTransport</key>
         <dict>
             <key>CFBundleIdentifier</key>
-            <string>com.cantonic.maschine.dext</string>
+            <string>com.cannuri.maschine.dext</string>
             <key>CFBundleIdentifierKernel</key>
             <string>com.apple.kpi.iokit</string>
             <key>IOClass</key>
@@ -67,7 +67,7 @@
             <key>IOUserClass</key>
             <string>MaschineMk3DisplayTransport</string>
             <key>IOUserServerName</key>
-            <string>com.cantonic.maschine.dext</string>
+            <string>com.cannuri.maschine.dext</string>
             <key>IOProviderClass</key>
             <string>IOUSBHostInterface</string>
             <key>idVendor</key>

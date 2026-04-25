@@ -6,7 +6,7 @@
     <true/>
     <key>com.apple.developer.driverkit.userclient-access</key>
     <array>
-        <string>com.cantonic.maschine.dext</string>
+        <string>com.cannuri.maschine.dext</string>
     </array>
     <key>com.apple.security.app-sandbox</key>
     <false/>

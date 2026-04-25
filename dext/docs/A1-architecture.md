@@ -19,7 +19,7 @@ augmented by DanBurkhardt/DriverKitUserClientSample) are taken as given.
 (`Maschine.app`). The container holds:
 
 - `Contents/MacOS/maschined` — existing Rust daemon, unchanged binary name.
-- `Contents/Library/SystemExtensions/com.cantonic.maschine.dext.dext` — the
+- `Contents/Library/SystemExtensions/com.cannuri.maschine.dext.dext` — the
   DriverKit bundle.
 - `Contents/Resources/…` — existing resource assets.
 - `Contents/embedded.provisionprofile` — host-app provisioning profile.
@@ -610,7 +610,7 @@ DextTransport) is the superset of the Rust side used by M2/M3/M4.
 
 | Milestone | Exit criterion | Rough LOC |
 |---|---|---|
-| **M1 — dext loads and logs** | `systemextensionsctl list` shows `com.cantonic.maschine.dext` in state `activated enabled`. Plugging the Mk3 emits an `os_log` "MaschineMk3HidTransport Start succeeded" from the dext. No IPC yet. | ~400 LOC C++ (two empty `Start`/`Stop` pairs, `Info.plist`, entitlements, host `main.swift`, build.sh) |
+| **M1 — dext loads and logs** | `systemextensionsctl list` shows `com.cannuri.maschine.dext` in state `activated enabled`. Plugging the Mk3 emits an `os_log` "MaschineMk3HidTransport Start succeeded" from the dext. No IPC yet. | ~400 LOC C++ (two empty `Start`/`Stop` pairs, `Info.plist`, entitlements, host `main.swift`, build.sh) |
 | **M2 — HID IN reports reach Rust** | Pressing a pad on the Mk3 produces a log line in `maschined` via `DextTransport::spawn_hid_reader`. Round-trip latency ≤ 2 ms observed. | ~900 LOC total: +300 C++ (`MaschineMk3UserClient`, HID read loop + async completion), +600 Rust (`dext.rs` open + register_hid_callback + notification thread + selector constants) |
 | **M3 — HID OUT reports land** | `maschined` lights a specific RGB pad via a synthesised OUT report; verified on hardware. HID OUT ring + backpressure working. | ~300 LOC: +150 C++ (OUT ring, `Static_HidOutReport`), +150 Rust (`write_hid`, `Semaphore`) |
 | **M4 — display bulk works** | A constant test pattern renders on both Mk3 displays at ≥30 fps, sustained, with no dropped frames over a 60 s soak. | ~500 LOC: +300 C++ (`MaschineMk3DisplayTransport`, ring, AsyncIOBundled), +200 Rust (`write_display`, display-done channel) |

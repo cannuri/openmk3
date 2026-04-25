@@ -13,7 +13,7 @@ Jump to [uninstall](#3-uninstall) or [troubleshooting](#4-troubleshooting) if yo
 
 ## 1. Developer mode (no Apple Developer Program required)
 
-This is the path the project uses today. Until Apple approves the distribution entitlements for `com.cantonic.maschine.dext`, the **production** flow below will not work for anyone else — but the dev flow works on any Mac you administer.
+This is the path the project uses today. Until Apple approves the distribution entitlements for `com.cannuri.maschine.dext`, the **production** flow below will not work for anyone else — but the dev flow works on any Mac you administer.
 
 ### 1.1 One-time host setup
 
@@ -63,7 +63,7 @@ dext/build/Maschine.app/Contents/MacOS/MaschineHost
 
 You'll see:
 ```
-[MaschineHost] submitted activation request for com.cantonic.maschine.dext
+[MaschineHost] submitted activation request for com.cannuri.maschine.dext
 [MaschineHost] user approval needed — open System Settings → General → Login Items & Extensions
 ```
 
@@ -81,7 +81,7 @@ On macOS 15 Sequoia (and 16+):
 After the reboot, plug in your Mk3:
 ```bash
 systemextensionsctl list
-# expected line: [activated enabled] com.cantonic.maschine.dext
+# expected line: [activated enabled] com.cannuri.maschine.dext
 log stream --predicate 'sender == "MaschineMk3Dext"'
 # expected: "MaschineMk3HidTransport::Start succeeded"
 ```
@@ -111,13 +111,13 @@ The `.pkg` comes in two variants; the release notes will say which one you downl
 - To stop: quit Maschine.app from the menu bar / Dock.
 
 **LaunchDaemon (opt-in).** `maschined` runs from system boot regardless of who's logged in, and relaunches on crash. Good if you want your controller to work in every DAW without ever thinking about it.
-- The `.pkg` postinstall hook already wrote `/Library/LaunchDaemons/com.cantonic.maschined.plist` and loaded it. `maschined` is running now.
+- The `.pkg` postinstall hook already wrote `/Library/LaunchDaemons/com.cannuri.maschined.plist` and loaded it. `maschined` is running now.
 - Log output lands at `/var/log/maschined.log` and `/var/log/maschined.err.log`.
 
 You can tell which variant was installed:
 ```bash
-sudo launchctl print system/com.cantonic.maschined 2>&1 | head -1
-# "system/com.cantonic.maschined = <...>" → LaunchDaemon variant
+sudo launchctl print system/com.cannuri.maschined 2>&1 | head -1
+# "system/com.cannuri.maschined = <...>" → LaunchDaemon variant
 # "Could not find service" → app-launched variant
 ```
 
@@ -141,8 +141,8 @@ sudo dext/scripts/uninstall.sh
 ```
 
 What it does, in order:
-1. Unloads and removes `/Library/LaunchDaemons/com.cantonic.maschined.plist` (if present).
-2. `systemextensionsctl uninstall $TEAM_ID com.cantonic.maschine.dext`.
+1. Unloads and removes `/Library/LaunchDaemons/com.cannuri.maschined.plist` (if present).
+2. `systemextensionsctl uninstall $TEAM_ID com.cannuri.maschine.dext`.
 3. `rm -rf /Applications/Maschine.app`.
 4. Removes Maschine preferences and caches.
 
@@ -199,7 +199,7 @@ xcrun notarytool log <submission-id> \
 Common causes in this project:
 - Hardened Runtime missing on a nested Mach-O. `build-dist.sh` passes `--options runtime` on every `codesign` call — if you edited that, restore it.
 - `--deep` used on an outer bundle. See 4.4.
-- Bundle ID in the entitlements doesn't match the actual bundle ID. We expect `com.cantonic.maschine` and `com.cantonic.maschine.dext` — don't edit one without the other.
+- Bundle ID in the entitlements doesn't match the actual bundle ID. We expect `com.cannuri.maschine` and `com.cannuri.maschine.dext` — don't edit one without the other.
 
 ### 4.7 Mk3 plugged in but nothing shows up in logs
 
@@ -217,9 +217,9 @@ If the VID/PID differ (e.g. Mk1, Mk2, or a firmware revision that shifted interf
 |---|---|---|
 | `/Applications/Maschine.app` | the `.pkg` / `build-dev.sh` copy | `uninstall.sh` |
 | `/Applications/Maschine.app/Contents/Library/SystemExtensions/MaschineMk3Dext.dext` | the app bundle | removed with the `.app` |
-| `/Library/LaunchDaemons/com.cantonic.maschined.plist` | `install-daemon.sh` (LaunchDaemon variant only) | `uninstall.sh` |
+| `/Library/LaunchDaemons/com.cannuri.maschined.plist` | `install-daemon.sh` (LaunchDaemon variant only) | `uninstall.sh` |
 | `/var/log/maschined.{log,err.log}` | LaunchDaemon writes these | left behind intentionally (diagnostics) |
-| `~/Library/Preferences/com.cantonic.maschine.plist` | the app on first run | `uninstall.sh` |
-| `~/Library/Caches/com.cantonic.maschine/` | the app | `uninstall.sh` |
+| `~/Library/Preferences/com.cannuri.maschine.plist` | the app on first run | `uninstall.sh` |
+| `~/Library/Caches/com.cannuri.maschine/` | the app | `uninstall.sh` |
 
-The LaunchDaemon label is `com.cantonic.maschined`. Dext bundle ID is `com.cantonic.maschine.dext`. Host app bundle ID is `com.cantonic.maschine`.
+The LaunchDaemon label is `com.cannuri.maschined`. Dext bundle ID is `com.cannuri.maschine.dext`. Host app bundle ID is `com.cannuri.maschine`.

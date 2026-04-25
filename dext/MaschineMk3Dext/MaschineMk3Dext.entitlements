@@ -17,7 +17,7 @@
     <true/>
     <key>com.apple.developer.driverkit.userclient-access</key>
     <array>
-        <string>com.cantonic.maschine</string>
+        <string>com.cannuri.maschine</string>
     </array>
 </dict>
 </plist>

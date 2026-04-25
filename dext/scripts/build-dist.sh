@@ -164,7 +164,7 @@ POSTINSTALL
     chmod +x "$PKG_SCRIPTS/postinstall"
     cp "$HERE/install-daemon.sh" "$PKG_SCRIPTS/install-daemon.sh"
     chmod +x "$PKG_SCRIPTS/install-daemon.sh"
-    cp "$DEXT_ROOT/MaschineHost/LaunchDaemon.plist" "$PKG_SCRIPTS/com.cantonic.maschined.plist"
+    cp "$DEXT_ROOT/MaschineHost/LaunchDaemon.plist" "$PKG_SCRIPTS/com.cannuri.maschined.plist"
   fi
   PKGBUILD_SCRIPTS_ARG=(--scripts "$PKG_SCRIPTS")
 else
@@ -229,7 +229,7 @@ FINAL_PKG="$DERIVED/Maschine-Mk3-Host-$VERSION.pkg"
 echo "==> [4/7] pkgbuild component"
 run pkgbuild \
   --root "$STAGING" \
-  --identifier "com.cantonic.maschine.installer" \
+  --identifier "com.cannuri.maschine.installer" \
   --version "$VERSION" \
   --install-location "/Applications" \
   ${PKGBUILD_SCRIPTS_ARG[@]+"${PKGBUILD_SCRIPTS_ARG[@]}"} \

@@ -3,8 +3,8 @@
 Xcode project scaffold for the Maschine Mk3 DriverKit system extension
 (dext) and the minimal host `.app` that activates it.
 
-- Host app bundle ID: `com.cantonic.maschine`
-- Dext bundle ID: `com.cantonic.maschine.dext`
+- Host app bundle ID: `com.cannuri.maschine`
+- Dext bundle ID: `com.cannuri.maschine.dext`
 - Personalities: `IOUSBHostInterface` on `idVendor=0x17CC` (6092),
   `idProduct=0x1600` (5632), `bInterfaceNumber` 4 (HID) and 5 (displays)
 - Deployment targets: macOS 14.0+, DriverKit 23.0+
@@ -115,7 +115,7 @@ launch.
 stdout will look roughly like:
 
 ```
-[MaschineHost] submitted activation request for com.cantonic.maschine.dext
+[MaschineHost] submitted activation request for com.cannuri.maschine.dext
 [MaschineHost] user approval needed — open System Settings → General → Login Items & Extensions
 ```
 
@@ -143,7 +143,7 @@ MaschineMk3DisplayTransport::Start succeeded — Mk3 display interface (if#5) at
 ## 4. Uninstall
 
 ```bash
-systemextensionsctl uninstall XXXXXXXXXX com.cantonic.maschine.dext
+systemextensionsctl uninstall XXXXXXXXXX com.cannuri.maschine.dext
 ```
 
 Replace `XXXXXXXXXX` with your team ID once set (see §0). In ad-hoc /

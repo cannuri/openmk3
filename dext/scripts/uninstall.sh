@@ -18,11 +18,11 @@
 
 set -euo pipefail
 
-LABEL="com.cantonic.maschined"
+LABEL="com.cannuri.maschined"
 PLIST_DST="/Library/LaunchDaemons/${LABEL}.plist"
 APP_PATH="/Applications/Maschine.app"
-DEXT_BUNDLE_ID="com.cantonic.maschine.dext"
-HOST_BUNDLE_ID="com.cantonic.maschine"
+DEXT_BUNDLE_ID="com.cannuri.maschine.dext"
+HOST_BUNDLE_ID="com.cannuri.maschine"
 
 # Team ID: try to read from the signed bundle, fall back to "-" (ad-hoc).
 TEAM_ID="${MASCHINE_TEAM_ID:-}"

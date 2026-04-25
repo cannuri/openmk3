@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-    com.cantonic.maschined.plist — LaunchDaemon template for maschined.
+    com.cannuri.maschined.plist — LaunchDaemon template for maschined.
 
     Copied to /Library/LaunchDaemons/ by dext/scripts/install-daemon.sh when
     the installer is built with MASCHINE_INSTALL_LAUNCHD=1. Runs maschined at
@@ -15,7 +15,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.cantonic.maschined</string>
+    <string>com.cannuri.maschined</string>
 
     <key>ProgramArguments</key>
     <array>

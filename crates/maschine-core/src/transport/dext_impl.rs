@@ -3,7 +3,7 @@
 //! Authority: `dext/docs/A1-architecture.md` §3 ("IPC wire protocol") and
 //! §4.2 ("DextTransport internals"). This client talks to the
 //! `MaschineMk3UserClient` `IOUserClient` subclass shipped inside the
-//! `com.cantonic.maschine.dext` DriverKit extension.
+//! `com.cannuri.maschine.dext` DriverKit extension.
 //!
 //! Two IOConnect handles per transport — one for the HID personality
 //! (if#4), one for the display personality (if#5). HID IN reports arrive

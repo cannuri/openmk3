@@ -112,7 +112,7 @@ permission to do so, keyed by the dext's bundle ID:
 <!-- maschined.app entitlements -->
 <key>com.apple.developer.driverkit.userclient-access</key>
 <array>
-    <string>com.cantonic.maschine.dext</string>
+    <string>com.cannuri.maschine.dext</string>
 </array>
 <key>com.apple.developer.system-extension.install</key>
 <true/>
@@ -130,7 +130,7 @@ Request it in the same form submission as the driverkit entitlement.
 | dext | `com.apple.developer.driverkit` | request form | `<true/>` |
 | dext | `com.apple.developer.driverkit.transport.usb` | request form (per VID) | `<array><dict>idVendor/idProduct</dict></array>` |
 | dext | `com.apple.developer.driverkit.family.usb.pipe` | request form | `<true/>` |
-| host .app | `com.apple.developer.driverkit.userclient-access` | request form (per dext bundle ID) | `<array><string>com.cantonic.maschine.dext</string></array>` |
+| host .app | `com.apple.developer.driverkit.userclient-access` | request form (per dext bundle ID) | `<array><string>com.cannuri.maschine.dext</string></array>` |
 | host .app | `com.apple.developer.system-extension.install` | auto on paid account | `<true/>` |
 
 ---
@@ -215,9 +215,9 @@ DriverKit has its own profile type — not the iOS or macOS profile, its own.
 ### 3.2 How to create them (developer.apple.com UI)
 
 1. **App IDs** → `+` →
-   - App ID for host `com.cantonic.maschine` with capabilities:
-     *System Extension* + *DriverKit User Client Access* (bundle ID `com.cantonic.maschine.dext`).
-   - App ID for dext `com.cantonic.maschine.dext` with capabilities:
+   - App ID for host `com.cannuri.maschine` with capabilities:
+     *System Extension* + *DriverKit User Client Access* (bundle ID `com.cannuri.maschine.dext`).
+   - App ID for dext `com.cannuri.maschine.dext` with capabilities:
      *DriverKit* + *DriverKit USB Transport* (enter VID `0x17CC`) + *DriverKit Family USB Pipe*.
    - Both bundle IDs **must be prefix-related** (dext bundle ID must begin with host bundle ID
      + `.`). This is an iPadOS compatibility requirement that macOS inherited.
@@ -281,7 +281,7 @@ Create these as checked-in files (no UUID/TeamID substitution — that goes in t
 export APP_ID="Developer ID Application: Can Tonic (XXXXXXXXXX)"
 export PKG_ID="Developer ID Installer: Can Tonic (XXXXXXXXXX)"
 export APP_BUNDLE="build/Release/Maschine.app"
-export DEXT_BUNDLE="$APP_BUNDLE/Contents/Library/SystemExtensions/com.cantonic.maschine.dext.dext"
+export DEXT_BUNDLE="$APP_BUNDLE/Contents/Library/SystemExtensions/com.cannuri.maschine.dext.dext"
 export APP_ENT="dext/Maschine.app.entitlements"
 export DEXT_ENT="dext/Maschine.dext.entitlements"
 
@@ -292,7 +292,7 @@ codesign --force --options runtime --timestamp \
 
 codesign --force --options runtime --timestamp \
   --sign "$APP_ID" \
-  "$DEXT_BUNDLE/Contents/MacOS/com.cantonic.maschine.dext"
+  "$DEXT_BUNDLE/Contents/MacOS/com.cannuri.maschine.dext"
 
 # --- 2. Dext bundle (with its own entitlements + profile) -----------------
 codesign --force --options runtime --timestamp \
@@ -326,7 +326,7 @@ from the app) actually registers the extension. Shipping a `.pkg` is simpler for
 # --- 5. Build component .pkg ---------------------------------------------
 pkgbuild \
   --root "build/Release" \
-  --identifier "com.cantonic.maschine.installer" \
+  --identifier "com.cannuri.maschine.installer" \
   --version "0.1.0" \
   --install-location "/Applications" \
   --sign "$PKG_ID" \
@@ -365,7 +365,7 @@ xcrun notarytool store-credentials "maschine-notary" \
 
 ```bash
 xcrun notarytool store-credentials "maschine-notary" \
-  --apple-id  "can@cantonic.com" \
+  --apple-id  "can@cannuri.com" \
   --team-id   "XXXXXXXXXX" \
   --password  "abcd-efgh-ijkl-mnop"        # generated at appleid.apple.com
 ```
@@ -456,7 +456,7 @@ open build/Debug/Maschine.app          # triggers OSSystemExtensionRequest
 systemextensionsctl list               # verify: state = "activated enabled"
 
 # Uninstall during iteration:
-systemextensionsctl uninstall <TEAM_ID> com.cantonic.maschine.dext
+systemextensionsctl uninstall <TEAM_ID> com.cannuri.maschine.dext
 
 # Nuke everything (panic button):
 sudo systemextensionsctl reset
@@ -529,8 +529,8 @@ Roughly in order of "wait why is nothing working".
    Get an answer ready before submitting.
 3. **`--deep` will burn you.** It re-signs nested bundles but skips entitlements plumbing on the
    inner dext. Sign bottom-up explicitly. Always.
-4. **Bundle IDs must be prefix-related.** `com.cantonic.maschine` (host) and
-   `com.cantonic.maschine.dext` (dext) — not arbitrary names. Apple enforces this for DriverKit.
+4. **Bundle IDs must be prefix-related.** `com.cannuri.maschine` (host) and
+   `com.cannuri.maschine.dext` (dext) — not arbitrary names. Apple enforces this for DriverKit.
 5. **Hex in `<integer>` doesn't parse.** Use decimal (`6092`, `5632`) in all `.plist`s. XML
    property lists never accept `0x…` in integer tags, period.
 6. **First-activation reboot.** Users will reboot once per dext bundle ID. Set expectations in UI.
