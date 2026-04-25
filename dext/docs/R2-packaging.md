@@ -365,7 +365,7 @@ xcrun notarytool store-credentials "maschine-notary" \
 
 ```bash
 xcrun notarytool store-credentials "maschine-notary" \
-  --apple-id  "can@cannuri.com" \
+  --apple-id  "can@cantonic.com" \
   --team-id   "XXXXXXXXXX" \
   --password  "abcd-efgh-ijkl-mnop"        # generated at appleid.apple.com
 ```
